@@ -1,6 +1,10 @@
 apply plugin: 'war'
 
 dependencies {
+
+    compile project(":core")
+    compile project(":jdbc")
+
     // Tomcat internal libraries
     providedCompile 'org.apache.tomcat:tomcat-api:+'
     providedCompile 'org.apache.tomcat:tomcat-jsp-api:+'
