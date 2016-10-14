@@ -1,0 +1,6 @@
+rootProject.name = 'GunShop2'
+
+include 'core',
+        'jdbc',
+        'xml',
+        'servlets'
