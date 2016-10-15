@@ -30,7 +30,8 @@ public class H2GunDao implements GunDao {
                                 resultSet.getLong("id"),
                                 resultSet.getString("name"),
                                 resultSet.getDouble("caliber")
-                        ));}
+                        ));
+        }
         return guns;
     }
 }

@@ -38,7 +38,8 @@ public class H2PersonDao implements PersonDao {
                                 resultSet.getString("password"),
                                 resultSet.getString("address"),
                                 resultSet.getString("telephone")
-                        ));}
+                        ));
+        }
         return persons;
     }
 }
