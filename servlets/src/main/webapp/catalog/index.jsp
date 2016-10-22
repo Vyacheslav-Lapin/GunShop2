@@ -1,6 +1,7 @@
 <%@ page import="model.Gun" %>
 <%@ page import="java.util.HashSet" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="/WEB-INF/gunshop.tld" prefix="gunshop"%>
 <html>
 <head>
     <title>Каталог</title>
@@ -14,12 +15,9 @@
         <th>Name</th>
         <th>Caliber</th>
     </tr>
-    <% for (Gun gun: (HashSet<Gun>) guns) {%>
-            <tr>
-                <td><a href="/buy/?id=<%=gun.getId()%>"><%=gun.getName()%></a></td>
-                <td><%=gun.getCaliber()%></td>
-            </tr>
-        <%}%>
+
+    ${gunshop:getList(guns)}
+
 </table>
 
 </body>
