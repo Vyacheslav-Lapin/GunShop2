@@ -31,14 +31,9 @@ public class Initer implements ServletContextListener {
     @Override
     @SneakyThrows
     public void contextInitialized(ServletContextEvent sce) {
+        Supplier<Connection> connectionPool = ExceptionalSupplier.toUncheckedSupplier(dataSource::getConnection);
         ServletContext context = sce.getServletContext();
-        String pathToDbConfig = context.getRealPath("/") + "WEB-INF/classes/";
-        Supplier<Connection> connectionPool;
-//        connectionPool = ConnectionPool.create(pathToDbConfig + "db.properties", pathToDbConfig + "h2.sql");
-
-        connectionPool = ExceptionalSupplier.toUncheckedSupplier(dataSource::getConnection);
-
-        initDb(connectionPool, pathToDbConfig + "h2.sql");
+        initDb(connectionPool, context.getRealPath("/") + "WEB-INF/classes/h2.sql");
 
         PersonDao personDao = new H2PersonDao(connectionPool);
         GunDao gunDao = new H2GunDao(connectionPool);
