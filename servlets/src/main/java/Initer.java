@@ -3,6 +3,7 @@ import dao.GunDao;
 import dao.PersonDao;
 import dao.h2.H2GunDao;
 import dao.h2.H2PersonDao;
+import lombok.extern.java.Log;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -11,6 +12,7 @@ import javax.servlet.annotation.WebListener;
 import java.sql.Connection;
 import java.util.function.Supplier;
 
+@Log
 @WebListener
 public class Initer implements ServletContextListener {
 

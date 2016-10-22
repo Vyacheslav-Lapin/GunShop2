@@ -1,4 +1,7 @@
-package common;import lombok.SneakyThrows;
+package common;
+
+import com.hegel.core.functions.ExceptionalConsumer;
+import lombok.SneakyThrows;
 
 import java.io.FileInputStream;
 import java.nio.file.Files;
@@ -52,13 +55,7 @@ public interface ConnectionPool extends Supplier<Connection>, AutoCloseable {
                     Files.lines(Paths.get(pathToInitScript))
                             .collect(Collectors.joining())
                             .split(";"))
-                    .forEachOrdered(sql -> {
-                        try {
-                            statement.addBatch(sql);
-                        } catch (SQLException e) {
-                            throw new RuntimeException();
-                        }
-                    });
+                    .forEachOrdered(ExceptionalConsumer.toUncheckedConsumer(statement::addBatch));
 
             statement.executeBatch();
         }
