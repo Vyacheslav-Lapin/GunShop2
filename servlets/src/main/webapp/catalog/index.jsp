@@ -16,7 +16,7 @@
     </tr>
     <% for (Gun gun: (HashSet<Gun>) guns) {%>
             <tr>
-                <td><a href="/buy/<%=gun.getId()%>"><%=gun.getName()%></a></td>
+                <td><a href="/buy/?id=<%=gun.getId()%>"><%=gun.getName()%></a></td>
                 <td><%=gun.getCaliber()%></td>
             </tr>
         <%}%>
