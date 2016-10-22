@@ -11,15 +11,12 @@
 
 <table>
     <tr>
-        <th>id</th>
         <th>Name</th>
         <th>Caliber</th>
     </tr>
-    <%
-        for (Gun gun: (HashSet<Gun>) guns) {%>
+    <% for (Gun gun: (HashSet<Gun>) guns) {%>
             <tr>
-                <td><%=gun.getId()%></td>
-                <td><%=gun.getName()%></td>
+                <td><a href="/buy/<%=gun.getId()%>"><%=gun.getName()%></a></td>
                 <td><%=gun.getCaliber()%></td>
             </tr>
         <%}%>

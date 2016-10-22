@@ -22,7 +22,7 @@ public class H2InstanceDao implements InstanceDao {
     @Override
     public Collection<Instance> getAll() {
         Collection<Instance> instances = new HashSet<>();
-        String sql = "SELECT i.id, i.model_id, g.name, g.caliber FROM Instance AS i, Gun g WHERE i.model_id = g.id";
+        String sql = "SELECT i.id, i.model_id, g.name, g.caliber FROM Instance i, Gun g WHERE i.model_id = g.id";
         try (Connection connection = connectionSupplier.get();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
