@@ -1,3 +1,4 @@
+import com.hegel.core.StringEncryptUtil;
 import com.hegel.core.functions.ExceptionalConsumer;
 import com.hegel.core.functions.ExceptionalSupplier;
 import dao.GunDao;
@@ -16,6 +17,7 @@ import javax.sql.DataSource;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.function.Supplier;
@@ -55,6 +57,19 @@ public class Initer implements ServletContextListener {
                     .forEachOrdered(ExceptionalConsumer.toUncheckedConsumer(statement::addBatch));
 
             statement.executeBatch();
+
+            try (ResultSet resultSet = statement.executeQuery("SELECT id, password FROM Person");
+                Statement statement1 = connection.createStatement()) {
+                while (resultSet.next()) {
+                    String id = resultSet.getString("id");
+                    String password = resultSet.getString("password");
+                    statement1.addBatch(
+                            "UPDATE Person SET password = '" +
+                            StringEncryptUtil.encrypt(password) +
+                            "' WHERE id = " + id);
+                }
+                statement1.executeBatch();
+            }
         }
     }
 }
