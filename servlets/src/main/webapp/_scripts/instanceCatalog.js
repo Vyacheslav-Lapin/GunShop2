@@ -29,6 +29,6 @@ class InstanceCatalog {
      * @param {Array<Gun>} guns
      */
     addAll(instancies=[]) {
-        instancies.forEach(this.add);
+        instancies.forEach(this.add.bind(this));
     }
 }
