@@ -1,8 +1,12 @@
+package listeners;
+
 import com.hegel.core.functions.ExceptionalConsumer;
 import com.hegel.core.functions.ExceptionalSupplier;
 import dao.GunDao;
+import dao.InstanceDao;
 import dao.PersonDao;
 import dao.h2.H2GunDao;
+import dao.h2.H2InstanceDao;
 import dao.h2.H2PersonDao;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
@@ -25,6 +29,10 @@ import java.util.stream.Collectors;
 @WebListener
 public class Initer implements ServletContextListener {
 
+    public static final String PERSON_DAO = "personDao";
+    public static final String GUN_DAO = "gunDao";
+    public static final String INSTANCE_DAO = "instanceDao";
+
     @Resource(name = "jdbc/TestDB")
     private DataSource dataSource;
 
@@ -37,9 +45,11 @@ public class Initer implements ServletContextListener {
 
         PersonDao personDao = new H2PersonDao(connectionPool);
         GunDao gunDao = new H2GunDao(connectionPool);
+        InstanceDao instanceDao = new H2InstanceDao(connectionPool);
 
-        context.setAttribute("personDao", personDao);
-        context.setAttribute("gunDao", gunDao);
+        context.setAttribute(PERSON_DAO, personDao);
+        context.setAttribute(GUN_DAO, gunDao);
+        context.setAttribute(INSTANCE_DAO, instanceDao);
     }
 
     @SneakyThrows

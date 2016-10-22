@@ -18,6 +18,10 @@ public interface ExceptionalFunction<T, R, E extends Throwable> extends Function
         }
     }
 
+    default R getOrThrowUnchecked(T param) {
+        return apply(param).getOrThrowUnchecked();
+    }
+
     static <T, R, E extends Throwable> R getOrThrowUnchecked(ExceptionalFunction<T, R, E> exceptionalFunction,
                                                              T param) {
         return exceptionalFunction.apply(param).getOrThrowUnchecked();

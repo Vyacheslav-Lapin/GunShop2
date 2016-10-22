@@ -3,14 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="_scripts/server.js"></script>
+    <script src="_scripts/instanceCatalog.js"></script>
+    <script>
+        addEventListener("DOMContentLoaded", () => {
+            Server.getInstancies()
+                .then(instancies => new InstanceCatalog().addAll(instancies));
+        }, true);
+    </script>
 </head>
 <body>
 
-Welcome!
+<h1>Welcome!</h1>
 
 <ul>
     <li><a href="/catalog/">Каталог</a></li>
 </ul>
+
+<h2>В наличии:</h2>
+<ol id="instancies">
+    <!--<li></li>-->
+</ol>
 
 </body>
 </html>
