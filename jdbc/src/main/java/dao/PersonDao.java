@@ -16,9 +16,10 @@ public interface PersonDao {
                 .findAny();
     }
 
-    default boolean isPersonRegistered(String login, String hash) {
+    default Optional<Person> isPersonRegistered(String login, String hash) {
         return getAll().stream()
                 .filter(person -> person.getEmail().equals(login))
-                .anyMatch(person -> person.getPassword().equals(hash));
+                .filter(person -> person.getPassword().equals(hash))
+                .findAny();
     }
 }

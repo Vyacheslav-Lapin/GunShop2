@@ -3,16 +3,17 @@ package security;
 import com.hegel.core.HttpFilter;
 import com.hegel.core.StringEncryptUtil;
 import dao.PersonDao;
+import model.Person;
 
 import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
-@WebFilter("/*")
+//@WebFilter("/*")
 public class SecurityFilter implements HttpFilter {
 
     private static String KEY = "key";
@@ -36,11 +37,11 @@ public class SecurityFilter implements HttpFilter {
         if (parameterMap.containsKey("j_password") && parameterMap.containsKey("j_username")) {
             // TODO: 22/10/2016
 
-            if (authorize(parameterMap)) {
-                session.setAttribute(KEY, new Object());
+            Optional<Person> authorize = authorize(parameterMap);
+            if (authorize.isPresent()) {
+                session.setAttribute(KEY, authorize.get());
                 chain.doFilter(request, response);
-            }
-            else
+            } else
                 request.getRequestDispatcher("/error.html").forward(request, response);
 
         } else {
@@ -50,7 +51,7 @@ public class SecurityFilter implements HttpFilter {
         }
     }
 
-    private boolean authorize(Map<String, String[]> parameterMap) {
+    private Optional<Person> authorize(Map<String, String[]> parameterMap) {
         String login = parameterMap.get("j_username")[0];
         String password = parameterMap.get("j_password")[0];
         String hash = StringEncryptUtil.encrypt(password);
