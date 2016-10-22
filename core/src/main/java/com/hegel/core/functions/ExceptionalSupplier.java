@@ -41,4 +41,8 @@ public interface ExceptionalSupplier<T, E extends Throwable> extends Supplier<Ex
     static <T> T avoid(Object t) {
         return null;
     }
+
+    static <T, E extends Throwable> Supplier<T> toUncheckedSupplier(ExceptionalSupplier<T, E> exceptionalSupplier) {
+        return exceptionalSupplier::getOrThrowUnchecked;
+    }
 }

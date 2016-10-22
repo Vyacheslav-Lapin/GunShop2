@@ -1,4 +1,5 @@
 import com.hegel.core.functions.ExceptionalConsumer;
+import com.hegel.core.functions.ExceptionalSupplier;
 import dao.GunDao;
 import dao.PersonDao;
 import dao.h2.H2GunDao;
@@ -6,9 +7,7 @@ import dao.h2.H2PersonDao;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -17,7 +16,6 @@ import javax.sql.DataSource;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.function.Supplier;
@@ -27,6 +25,9 @@ import java.util.stream.Collectors;
 @WebListener
 public class Initer implements ServletContextListener {
 
+    @Resource(name = "jdbc/TestDB")
+    private DataSource dataSource;
+
     @Override
     @SneakyThrows
     public void contextInitialized(ServletContextEvent sce) {
@@ -35,7 +36,7 @@ public class Initer implements ServletContextListener {
         Supplier<Connection> connectionPool;
 //        connectionPool = ConnectionPool.create(pathToDbConfig + "db.properties", pathToDbConfig + "h2.sql");
 
-        connectionPool = getConnectionSupplier();
+        connectionPool = ExceptionalSupplier.toUncheckedSupplier(dataSource::getConnection);
 
         initDb(connectionPool, pathToDbConfig + "h2.sql");
 
@@ -60,18 +61,5 @@ public class Initer implements ServletContextListener {
 
             statement.executeBatch();
         }
-    }
-
-    private Supplier<Connection> getConnectionSupplier() throws NamingException {
-        Context initContext = new InitialContext();
-        Context envContext  = (Context) initContext.lookup("java:/comp/env");
-        DataSource ds = (DataSource) envContext.lookup("jdbc/TestDB");
-        return () -> {
-            try {
-                return ds.getConnection();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        };
     }
 }
