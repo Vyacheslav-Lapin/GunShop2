@@ -5,7 +5,7 @@ class InstanceCatalog {
     /**
      * @param {string} id
      */
-    constructor(id="instancies") {
+    constructor(id="instances") {
         /**
          * @private
          * @type HTMLOListElement
@@ -14,7 +14,7 @@ class InstanceCatalog {
     }
 
     /**
-     * @param {Instance} gun
+     * @param {Instance} instance
      */
     add(instance) {
         //noinspection JSValidateTypes
@@ -26,9 +26,9 @@ class InstanceCatalog {
     }
 
     /**
-     * @param {Array<Gun>} guns
+     * @param {Array<Instance>} instances
      */
-    addAll(instancies=[]) {
-        instancies.forEach(this.add.bind(this));
+    addAll(instances=[]) {
+        instances.forEach(this.add.bind(this));
     }
 }

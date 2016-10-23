@@ -1,24 +1,3 @@
-/**
- * @interface
- */
-class Gun {
-    constructor() {
-        this.id = 0;
-        this.name = "";
-        this.caliber = 0;
-    }
-}
-
-/**
- * @interface
- */
-class Instance {
-    constructor() {
-        this.id = 0;
-        this.gun = new Gun();
-    }
-}
-
 'use strict';
 
 const /** @type string */ METHOD = 'GET';
@@ -65,7 +44,7 @@ class Server {
     /**
      * @returns Promise<Instance[]>
      */
-    static getInstancies() {
+    static getInstances() {
         return new Promise((resolve, reject) => this.getObjectAsync('instance', resolve, reject))
     }
 }

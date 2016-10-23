@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="_scripts/server.js"></script>
-    <script src="_scripts/instanceCatalog.js"></script>
+    <script src="_scripts/Server.js"></script>
+    <script src="_scripts/InstanceCatalog.js"></script>
     <script>
         addEventListener("DOMContentLoaded", () => {
-            Server.getInstancies()
+            Server.getInstances()
                 .then(instancies => new InstanceCatalog().addAll(instancies));
         }, true);
     </script>
@@ -21,9 +21,7 @@
 </ul>
 
 <h2>В наличии:</h2>
-<ol id="instancies">
-    <!--<li></li>-->
-</ol>
+<ol id="instances"></ol>
 
 </body>
 </html>
