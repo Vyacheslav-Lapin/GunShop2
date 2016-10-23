@@ -3,85 +3,41 @@ package common;
 import com.hegel.core.functions.ExceptionalConsumer;
 import lombok.SneakyThrows;
 
-import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
-import java.util.Properties;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @FunctionalInterface
-public interface ConnectionPool extends Supplier<Connection>, AutoCloseable {
-
-    BlockingQueue<PooledConnection> getConnectionQueue();
+public interface ConnectionPool extends Supplier<Connection> {
 
     @SneakyThrows
-    static ConnectionPool create(String pathToConfig) {
+    static ConnectionPool create(Supplier<Connection> connectionSupplier) {
+        return connectionSupplier::get;
+    }
 
-        Properties properties = new Properties();
-        properties.load(new FileInputStream(pathToConfig));
-
-        Class.forName(getValueAndRemoveKey(properties, "driver"));
-        String url = getValueAndRemoveKey(properties, "url");
-        int poolSize = Integer.parseInt(getValueAndRemoveKey(properties, "poolSize"));
-
-        BlockingQueue<PooledConnection> connectionQueue = new ArrayBlockingQueue<>(poolSize);
-
-        for (int i = 0; i < poolSize; i++)
-            connectionQueue.add(
-                    PooledConnection.create(
-                            DriverManager.getConnection(url, properties),
-                            connectionQueue));
-
-        return () -> connectionQueue;
+    static ConnectionPool create(Supplier<Connection> connectionSupplier, String pathToInitScript) {
+        ConnectionPool connectionPool = create(connectionSupplier);
+        connectionPool.executeScript(pathToInitScript);
+        return connectionPool;
     }
 
     @SneakyThrows
-    static ConnectionPool create(String pathToConfig, String pathToInitScript) {
+    default int[] executeScript(String pathToScript) {
 
-        ConnectionPool connectionPool = create(pathToConfig);
-
-        try (Connection connection = connectionPool.get();
+        try (Connection connection = get();
              Statement statement = connection.createStatement()) {
 
             Arrays.stream(
-                    Files.lines(Paths.get(pathToInitScript))
+                    Files.lines(Paths.get(pathToScript))
                             .collect(Collectors.joining())
                             .split(";"))
                     .forEachOrdered(ExceptionalConsumer.toUncheckedConsumer(statement::addBatch));
 
-            statement.executeBatch();
+            return statement.executeBatch();
         }
-
-        return connectionPool;
-    }
-
-    static String getValueAndRemoveKey(Properties properties, String key) {
-        return (String) properties.remove(key);
-    }
-
-    @Override
-    @SneakyThrows
-    default Connection get() {
-        return getConnectionQueue().take();
-    }
-
-    @Override
-    default void close() throws Exception {
-        getConnectionQueue().forEach(connection -> {
-            try {
-                connection.reallyClose();
-            } catch (SQLException e) {
-                e.printStackTrace();
-//                throw new RuntimeException(e);
-            }
-        });
     }
 }

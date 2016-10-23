@@ -1,10 +1,7 @@
 package listeners;
 
-import com.hegel.core.functions.ExceptionalConsumer;
-import com.hegel.core.functions.ExceptionalSupplier;
-import dao.GunDao;
-import dao.InstanceDao;
-import dao.PersonDao;
+import com.hegel.core.StringEncryptUtil;
+import common.ConnectionPool;
 import dao.h2.H2GunDao;
 import dao.h2.H2InstanceDao;
 import dao.h2.H2PersonDao;
@@ -17,13 +14,12 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 import javax.sql.DataSource;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
+
+import static com.hegel.core.functions.ExceptionalSupplier.toUncheckedSupplier;
 
 @Log
 @WebListener
@@ -39,45 +35,36 @@ public class Initer implements ServletContextListener {
     @Override
     @SneakyThrows
     public void contextInitialized(ServletContextEvent sce) {
-        Supplier<Connection> connectionPool = ExceptionalSupplier.toUncheckedSupplier(dataSource::getConnection);
         ServletContext context = sce.getServletContext();
-        initDb(connectionPool, context.getRealPath("/") + "WEB-INF/classes/h2.sql");
+        ConnectionPool connectionPool = ConnectionPool.create(
+                toUncheckedSupplier(dataSource::getConnection),
+                context.getRealPath("/WEB-INF/classes/h2.sql"));
 
-        PersonDao personDao = new H2PersonDao(connectionPool);
-        GunDao gunDao = new H2GunDao(connectionPool);
-        InstanceDao instanceDao = new H2InstanceDao(connectionPool);
+//        encryptPasswords(connectionPool);
 
-        context.setAttribute(PERSON_DAO, personDao);
-        context.setAttribute(GUN_DAO, gunDao);
-        context.setAttribute(INSTANCE_DAO, instanceDao);
+        context.setAttribute(PERSON_DAO, new H2PersonDao(connectionPool));
+        context.setAttribute(GUN_DAO, new H2GunDao(connectionPool));
+        context.setAttribute(INSTANCE_DAO, new H2InstanceDao(connectionPool));
     }
 
     @SneakyThrows
-    private void initDb(Supplier<Connection> connectionPool, String pathToInitScript) {
+    private void encryptPasswords(Supplier<Connection> connectionSupplier) {
 
-        try (Connection connection = connectionPool.get();
-             Statement statement = connection.createStatement()) {
+        try (Connection connection = connectionSupplier.get();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT id, password FROM Person");
+             Statement statement1 = connection.createStatement()) {
 
-            Arrays.stream(
-                    Files.lines(Paths.get(pathToInitScript))
-                            .collect(Collectors.joining())
-                            .split(";"))
-                    .forEachOrdered(ExceptionalConsumer.toUncheckedConsumer(statement::addBatch));
+            while (resultSet.next()) {
+                String id = resultSet.getString("id");
+                String password = resultSet.getString("password");
+                statement1.addBatch(
+                        "UPDATE Person SET password = '" +
+                                StringEncryptUtil.encrypt(password) +
+                                "' WHERE id = " + id);
+            }
 
-            statement.executeBatch();
-
-//            try (ResultSet resultSet = statement.executeQuery("SELECT id, password FROM Person");
-//                Statement statement1 = connection.createStatement()) {
-//                while (resultSet.next()) {
-//                    String id = resultSet.getString("id");
-//                    String password = resultSet.getString("password");
-//                    statement1.addBatch(
-//                            "UPDATE Person SET password = '" +
-//                            StringEncryptUtil.encrypt(password) +
-//                            "' WHERE id = " + id);
-//                }
-//                statement1.executeBatch();
-//            }
+            statement1.executeBatch();
         }
     }
 }

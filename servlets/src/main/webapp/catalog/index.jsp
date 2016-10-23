@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<jsp:useBean id="guns" class="java.util.HashSet" scope="request"/>
+<%--<jsp:useBean id="guns" class="java.util.HashSet" scope="request"/>--%>
 
 <table>
     <tr>
@@ -16,7 +16,7 @@
         <th>Caliber</th>
     </tr>
 
-    ${gunshop:getList(guns)}
+    ${gunshop:getList(requestScope["guns"])}
 
 </table>
 
