@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket example!</title>
+
+    <style type="text/css">
+        h1, form {
+            text-align: center;
+        }
+
+        #output > p {
+            word-wrap: break-word;
+        }
+    </style>
+
+    <script src="_scripts/MyWebSocket.js"></script>
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+            new MyWebSocket();
+        }, false);
+    </script>
+</head>
+
+<body>
+
+<h1>Hello World WebSocket Client</h1>
+
+<form action="">
+    <input id="message" name="message" placeholder="Hello WebSocket!"/><br/>
+    <input id="textID" type="button" value="Send"/>
+</form>
+
+<div id="output"></div>
+
+</body>
+</html>
