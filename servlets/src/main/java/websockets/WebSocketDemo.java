@@ -12,11 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @ServerEndpoint("/echo")
 public class WebSocketDemo {
 
-//    @OnMessage
-//    public String echoTextMessage(String msg) {
-//        return msg + " from WebSocket!";
-//    }
-
     private static Set<Session> userSessions = Collections.newSetFromMap(
             new ConcurrentHashMap<Session, Boolean>());
 
@@ -33,7 +28,7 @@ public class WebSocketDemo {
 
     @OnMessage
     public void onMessage(String message) {
-        broadcast(message + " from WebSocket!");
+        broadcast("Все говорят \"" + message + "\", а ты купи слона!");
     }
 
     public static void broadcast(String msg) {
@@ -41,4 +36,9 @@ public class WebSocketDemo {
                 .map(Session::getAsyncRemote)
                 .forEach(async -> async.sendText(msg));
     }
+
+//    @OnMessage
+//    public String echoTextMessage(String msg) {
+//        return msg + " from WebSocket!";
+//    }
 }
