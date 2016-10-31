@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+@SuppressWarnings("unused")
 @ServerEndpoint("/echo")
 public class WebSocketDemo {
 
@@ -31,6 +32,7 @@ public class WebSocketDemo {
         broadcast("Все говорят \"" + message + "\", а ты купи слона!");
     }
 
+    @SuppressWarnings("WeakerAccess")
     public static void broadcast(String msg) {
         userSessions.stream()
                 .map(Session::getAsyncRemote)
