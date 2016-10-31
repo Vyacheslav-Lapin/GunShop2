@@ -7,10 +7,12 @@ import model.Gun;
 import model.Instance;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 @AllArgsConstructor
@@ -36,5 +38,24 @@ public class H2InstanceDao implements InstanceDao {
                         ));
         }
         return instances;
+    }
+
+    @SneakyThrows
+    @Override
+    public Optional<Instance> getById(long id) {
+        String sql = "SELECT i.model_id, g.name, g.caliber FROM Instance i, Gun g WHERE i.id = ? AND i.model_id = g.id";
+        try (Connection connection = connectionSupplier.get();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setLong(1, id);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return Optional.ofNullable(resultSet.next() ?
+                        new Instance(
+                                id,
+                                new Gun(resultSet.getLong("model_id"),
+                                        resultSet.getString("name"),
+                                        resultSet.getDouble("caliber"))) :
+                        null);
+            }
+        }
     }
 }

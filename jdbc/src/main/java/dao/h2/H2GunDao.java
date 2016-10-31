@@ -6,10 +6,12 @@ import lombok.SneakyThrows;
 import model.Gun;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 @AllArgsConstructor
@@ -33,5 +35,21 @@ public class H2GunDao implements GunDao {
                         ));
         }
         return guns;
+    }
+
+    @SneakyThrows
+    @Override
+    public Optional<Gun> getById(long id) {
+        try (Connection connection = connectionSupplier.get();
+             PreparedStatement statement = connection.prepareStatement("SELECT name, caliber FROM Gun WHERE id=?")) {
+            statement.setLong(1, id);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return Optional.ofNullable(resultSet.next() ?
+                        new Gun(id,
+                                resultSet.getString("name"),
+                                resultSet.getDouble("caliber")) :
+                        null);
+            }
+        }
     }
 }
