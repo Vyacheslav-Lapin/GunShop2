@@ -42,9 +42,9 @@ public class Initer implements ServletContextListener {
 
 //        encryptPasswords(connectionPool);
 
-        context.setAttribute(PERSON_DAO, new H2PersonDao(connectionPool));
-        context.setAttribute(GUN_DAO, new H2GunDao(connectionPool));
-        context.setAttribute(INSTANCE_DAO, new H2InstanceDao(connectionPool));
+        context.setAttribute(PERSON_DAO, (H2PersonDao) connectionPool::get);
+        context.setAttribute(GUN_DAO, (H2GunDao) connectionPool::get);
+        context.setAttribute(INSTANCE_DAO, (H2InstanceDao) connectionPool::get);
     }
 
     @SneakyThrows

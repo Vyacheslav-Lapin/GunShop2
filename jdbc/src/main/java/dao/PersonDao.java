@@ -1,14 +1,18 @@
 package dao;
 
+import com.hegel.core.JdbcDao;
 import model.Person;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 @FunctionalInterface
-public interface PersonDao {
+public interface PersonDao extends JdbcDao {
     
-    Collection<Person> getAll();
+    default Collection<Person> getAll() {
+        return Collections.emptySet();
+    }
     
     default Optional<Person> getById(long id) {
         return getAll().stream()

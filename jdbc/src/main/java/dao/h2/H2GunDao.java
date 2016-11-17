@@ -1,8 +1,8 @@
 package dao.h2;
 
 import dao.GunDao;
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.val;
 import model.Gun;
 
 import java.sql.Connection;
@@ -12,43 +12,31 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.function.Supplier;
 
-@AllArgsConstructor
-public class H2GunDao implements GunDao {
-
-    private Supplier<Connection> connectionSupplier;
+@FunctionalInterface
+public interface H2GunDao extends GunDao {
 
     @SneakyThrows
     @Override
-    public Collection<Gun> getAll() {
-        Collection<Gun> guns = new HashSet<>();
-        try (Connection connection = connectionSupplier.get();
+    default Collection<Gun> getAll() {
+        val guns = new HashSet<Gun>();
+        try (Connection connection = get();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT id, name, caliber FROM Gun")) {
             while (resultSet.next())
-                guns.add(
-                        new Gun(
-                                resultSet.getLong("id"),
-                                resultSet.getString("name"),
-                                resultSet.getDouble("caliber")
-                        ));
+                guns.add(Gun.getFrom(resultSet));
         }
         return guns;
     }
 
     @SneakyThrows
     @Override
-    public Optional<Gun> getById(long id) {
-        try (Connection connection = connectionSupplier.get();
-             PreparedStatement statement = connection.prepareStatement("SELECT name, caliber FROM Gun WHERE id=?")) {
+    default Optional<Gun> getById(long id) {
+        try (Connection connection = get();
+             PreparedStatement statement = connection.prepareStatement("SELECT id, name, caliber FROM Gun WHERE id=?")) {
             statement.setLong(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
-                return Optional.ofNullable(resultSet.next() ?
-                        new Gun(id,
-                                resultSet.getString("name"),
-                                resultSet.getDouble("caliber")) :
-                        null);
+                return Optional.ofNullable(resultSet.next() ? Gun.getFrom(resultSet) : null);
             }
         }
     }

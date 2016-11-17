@@ -1,7 +1,6 @@
 package dao.h2;
 
 import dao.InstanceDao;
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import model.Gun;
 import model.Instance;
@@ -13,19 +12,16 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.function.Supplier;
 
-@AllArgsConstructor
-public class H2InstanceDao implements InstanceDao {
-
-    private Supplier<Connection> connectionSupplier;
+@FunctionalInterface
+public interface H2InstanceDao extends InstanceDao {
 
     @SneakyThrows
     @Override
-    public Collection<Instance> getAll() {
+    default Collection<Instance> getAll() {
         Collection<Instance> instances = new HashSet<>();
         String sql = "SELECT i.id, i.model_id, g.name, g.caliber FROM Instance i, Gun g WHERE i.model_id = g.id";
-        try (Connection connection = connectionSupplier.get();
+        try (Connection connection = get();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
             while (resultSet.next())
@@ -42,19 +38,13 @@ public class H2InstanceDao implements InstanceDao {
 
     @SneakyThrows
     @Override
-    public Optional<Instance> getById(long id) {
-        String sql = "SELECT i.model_id, g.name, g.caliber FROM Instance i, Gun g WHERE i.id = ? AND i.model_id = g.id";
-        try (Connection connection = connectionSupplier.get();
+    default Optional<Instance> getById(long id) {
+        String sql = "SELECT i.model_id id, g.name, g.caliber FROM Instance i, Gun g WHERE i.id = ? AND i.model_id = g.id";
+        try (Connection connection = get();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setLong(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
-                return Optional.ofNullable(resultSet.next() ?
-                        new Instance(
-                                id,
-                                new Gun(resultSet.getLong("model_id"),
-                                        resultSet.getString("name"),
-                                        resultSet.getDouble("caliber"))) :
-                        null);
+                return Optional.ofNullable(resultSet.next() ? Instance.getFrom(resultSet) : null);
             }
         }
     }

@@ -169,9 +169,22 @@ public interface JdbcDao extends Supplier<Connection> {
                 .stream();
     }
 
+//    default <T> Optional<T> getObject(Constructor<T> constructor) {
+//        return getSimpleQueryString(constructor) + " WHERE ",
+//                resultSet -> ExceptionalFunction.getOrThrowUnchecked(constructor::newInstance,
+//                        Arrays.stream(constructor.getParameters())
+//                                .map(parameter -> convert(parameter.getType(),
+//                                        ExceptionalFunction.getOrThrowUnchecked(
+//                                                resultSet::getObject,
+//                                                toDbName(parameter.getName()))))
+//                                .toArray()),
+//                ArrayList<T>::new)
+//                .getOrThrowUnchecked();
+//    }
+
     default <T> Collection<T> getObjects(Constructor<T> constructor) {
         return collect(
-                getQueryString(constructor),
+                getSimpleQueryString(constructor),
                 resultSet -> ExceptionalFunction.getOrThrowUnchecked(constructor::newInstance,
                         Arrays.stream(constructor.getParameters())
                                 .map(parameter -> convert(parameter.getType(),
@@ -185,7 +198,7 @@ public interface JdbcDao extends Supplier<Connection> {
 
 //    default <T> Collection<T> getObjects(Method method) {
 //        return collect(
-//                getQueryString(method),
+//                getSimpleQueryString(method),
 //                resultSet -> {
 //                    return ExceptionalFunction.getOrThrowUnchecked(params -> method.invoke(null, params),
 //                            Arrays.stream(method.getParameters())
@@ -207,11 +220,23 @@ public interface JdbcDao extends Supplier<Connection> {
                         o);
     }
 
-    static String getQueryString(Executable executable) {
+    static String getSimpleQueryString(Executable executable) {
         String typeName = executable.getAnnotatedReturnType().getType().getTypeName();
         return "SELECT "
                 + Arrays.stream(executable.getParameters())
                 .map(Parameter::getName)
+                .map(JdbcDao::toDbName)
+                .collect(Collectors.joining(", "))
+                + " FROM "
+                + typeName.substring(typeName.lastIndexOf('.') + 1);
+    }
+
+    static String getQueryWithWhereString(Executable executable, String whereField) {
+        String typeName = executable.getAnnotatedReturnType().getType().getTypeName();
+        return "SELECT "
+                + Arrays.stream(executable.getParameters())
+                .map(Parameter::getName)
+                .filter(s -> !s.equals(whereField))
                 .map(JdbcDao::toDbName)
                 .collect(Collectors.joining(", "))
                 + " FROM "
