@@ -1,21 +1,8 @@
-# IntelliJ project files #
+.gitignore
+
 .idea
 *.iml
-classes
-out
+
+.gradle
+gradle*
 build
-*.class
-
-# Eclipse project files #
-.classpath
-.project
-.settings
-
-# Gradle #
-target
-gradlew*
-
-# Package Files #
-*.jar
-*.war
-*.ear

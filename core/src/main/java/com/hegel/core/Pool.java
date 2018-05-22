@@ -3,6 +3,7 @@ package com.hegel.core;
 import com.hegel.core.functions.ExceptionalConsumer;
 import com.hegel.core.functions.ExceptionalSupplier;
 import com.hegel.core.reflect.InvocationHandler;
+import lombok.Getter;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -14,6 +15,7 @@ import static com.hegel.core.functions.ExceptionalSupplier.avoid;
 
 public class Pool<T extends AutoCloseable> implements Supplier<T>, AutoCloseable {
 
+    @Getter
     private Function<InvocationHandler<T>, T> proxyMaker;
     private BlockingQueue<T> freeObjectsQueue;
     private volatile boolean isClosing;
@@ -38,7 +40,8 @@ public class Pool<T extends AutoCloseable> implements Supplier<T>, AutoCloseable
 
     @Override
     public T get() {
-        if (isClosing) throw new RuntimeException("Trying to get object from closed pool!");
+        if (isClosing)
+            throw new RuntimeException("Trying to get object from closed pool!");
         return ExceptionalSupplier.getOrThrowUnchecked(freeObjectsQueue::take);
     }
 

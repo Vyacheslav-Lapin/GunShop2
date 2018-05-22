@@ -29,7 +29,7 @@ public class InstanceResource implements JsonRestfulWebResource {
     @GET
     public Response getAll() {
         final Collection<Instance> instances = instanceDao.getAll();
-        return instances.size() > 0 ? ok(instances): noContent();
+        return instances.isEmpty() ? ok(instances): noContent();
     }
 
     @GET
