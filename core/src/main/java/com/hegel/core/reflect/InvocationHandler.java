@@ -9,10 +9,19 @@ import java.util.function.Function;
 @FunctionalInterface
 public interface InvocationHandler<T> extends java.lang.reflect.InvocationHandler {
 
+    static <T> Function<InvocationHandler<T>, T> getProxyMakerFor(Class<T> anInterface) {
+        if (anInterface.isInterface())
+            //noinspection unchecked
+            return invocationHandler -> (T) Proxy.newProxyInstance(
+                    anInterface.getClassLoader(), new Class[]{anInterface}, invocationHandler);
+        else
+            throw new NotAnInterfaceException();
+    }
+
     Object apply(T proxy, Method method, Function<T, ?> chain, Object[] args);
 
     @Override
-    default Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    default Object invoke(Object proxy, Method method, Object[] args) {
         if (method.getDeclaringClass() == Object.class)
             switch (method.getName()) {
                 case "equals":
@@ -28,11 +37,5 @@ public interface InvocationHandler<T> extends java.lang.reflect.InvocationHandle
             }
         //noinspection unchecked
         return apply((T) proxy, method, ExceptionalFunction.toUncheckedFunction(t -> method.invoke(t, args)), args);
-    }
-
-    static <T> Function<InvocationHandler<T>, T> getProxyMakerFor(Class<T> anInterface) {
-        //noinspection unchecked
-        return invocationHandler -> (T) Proxy.newProxyInstance(
-                anInterface.getClassLoader(), new Class[]{anInterface}, invocationHandler);
     }
 }

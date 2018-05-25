@@ -1,8 +1,13 @@
 .gitignore
+.java-version
 
 .idea
 *.iml
+out
+classes
 
 .gradle
-gradle*
+gradle
 build
+
+logs

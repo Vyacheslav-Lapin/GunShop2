@@ -6,8 +6,9 @@ dependencies {
     compile project(":jdbc")
 
     // Tomcat internal libraries
-    providedCompile 'org.apache.tomcat:tomcat-api:+'
-    providedCompile 'org.apache.tomcat:tomcat-jsp-api:+'
+    providedCompile 'org.apache.tomcat:tomcat-api:+',
+            'org.apache.tomcat:tomcat-jsp-api:+',
+            'javax:javaee-api:+'
 
     // JSTL
 //    compile 'javax.servlet.jsp.jstl:javax.servlet.jsp.jstl-api:+'
@@ -17,8 +18,8 @@ dependencies {
 //    compile 'javax.validation:validation-api:+'
 
     // Jersey
-    compile 'org.glassfish.jersey.containers:jersey-container-servlet:+'
-    compile 'org.glassfish.jersey.media:jersey-media-moxy:+'
+    compile 'org.glassfish.jersey.containers:jersey-container-servlet:2.26-b03',
+            'org.glassfish.jersey.media:jersey-media-moxy:2.26-b03'
 
     // Jackson
     compile 'com.fasterxml.jackson.core:jackson-databind:+'

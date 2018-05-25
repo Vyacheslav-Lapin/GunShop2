@@ -6,7 +6,9 @@ import dao.h2.H2GunDao;
 import dao.h2.H2InstanceDao;
 import dao.h2.H2PersonDao;
 import lombok.SneakyThrows;
-import lombok.extern.java.Log;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
@@ -20,25 +22,28 @@ import java.sql.Statement;
 import java.util.function.Supplier;
 
 import static com.hegel.core.functions.ExceptionalSupplier.toUncheckedSupplier;
+import static lombok.AccessLevel.PRIVATE;
 
-@Log
+@Slf4j
 @WebListener
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 public class Initer implements ServletContextListener {
 
-    public static final String PERSON_DAO = "personDao";
-    public static final String GUN_DAO = "gunDao";
-    public static final String INSTANCE_DAO = "instanceDao";
+    public static String PERSON_DAO = "personDao";
+    public static String GUN_DAO = "gunDao";
+    public static String INSTANCE_DAO = "instanceDao";
 
+    @NonFinal
     @Resource(name = "jdbc/TestDB")
-    private DataSource dataSource;
+    DataSource dataSource;
 
     @Override
-    @SneakyThrows
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext context = sce.getServletContext();
         ConnectionPool connectionPool = ConnectionPool.create(
                 toUncheckedSupplier(dataSource::getConnection),
-                context.getRealPath("/WEB-INF/classes/h2.sql"));
+                context.getRealPath("/WEB-INF/classes/h2.sql")
+        );
 
 //        encryptPasswords(connectionPool);
 

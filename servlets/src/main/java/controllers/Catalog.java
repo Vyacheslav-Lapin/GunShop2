@@ -2,6 +2,7 @@ package controllers;
 
 import dao.GunDao;
 import listeners.Initer;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.java.Log;
 import model.Gun;
 
@@ -16,15 +17,18 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
 
+import static lombok.AccessLevel.PRIVATE;
+
 @Log
 @WebServlet("/catalog/")
+@FieldDefaults(level = PRIVATE)
 public class Catalog extends HttpServlet {
 
-    public static final String GUNS = "guns";
-    private GunDao gunDao;
+    static final String GUNS = "guns";
+    GunDao gunDao;
 
     @Override
-    public void init(ServletConfig config) throws ServletException {
+    public void init(ServletConfig config) {
         ServletContext servletContext = config.getServletContext();
         gunDao = (GunDao) servletContext.getAttribute(Initer.GUN_DAO);
     }

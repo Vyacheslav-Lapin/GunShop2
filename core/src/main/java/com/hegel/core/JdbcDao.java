@@ -182,19 +182,19 @@ public interface JdbcDao extends Supplier<Connection> {
 //                .getOrThrowUnchecked();
 //    }
 
-    default <T> Collection<T> getObjects(Constructor<T> constructor) {
-        return collect(
-                getSimpleQueryString(constructor),
-                resultSet -> ExceptionalFunction.getOrThrowUnchecked(constructor::newInstance,
-                        Arrays.stream(constructor.getParameters())
-                                .map(parameter -> convert(parameter.getType(),
-                                        ExceptionalFunction.getOrThrowUnchecked(
-                                                resultSet::getObject,
-                                                toDbName(parameter.getName()))))
-                                .toArray()),
-                ArrayList<T>::new)
-                .getOrThrowUnchecked();
-    }
+//    default <T> Collection<T> getObjects(Constructor<T> constructor) {
+//        return collect(
+//                getSimpleQueryString(constructor),
+//                resultSet -> ExceptionalFunction.getOrThrowUnchecked(constructor::newInstance,
+//                        Arrays.stream(constructor.getParameters())
+//                                .map(parameter -> convert(parameter.getType(),
+//                                        ExceptionalFunction.getOrThrowUnchecked(
+//                                                resultSet::getObject,
+//                                                toDbName(parameter.getName()))))
+//                                .toArray()),
+//                ArrayList<T>::new)
+//                .getOrThrowUnchecked();
+//    }
 
 //    default <T> Collection<T> getObjects(Method method) {
 //        return collect(

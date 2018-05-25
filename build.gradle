@@ -4,16 +4,46 @@ subprojects {
 
     apply plugin: 'java'
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    sourceCompatibility =
+            targetCompatibility = 1.8
 
     repositories {
+//        flatDir { dirs './../lib' } // for local libs
+        mavenLocal()
         mavenCentral()
+        jcenter() // BinTray
     }
 
-    dependencies {
-        compile 'ch.qos.logback:logback-classic:+'
-        compileOnly 'org.projectlombok:lombok:+'
-        testCompile 'junit:junit:+'
+    configurations {
+        testCompile.extendsFrom compileOnly
+        annotationProcessor.extendsFrom compileOnly
     }
+
+    // turn sout`ing on in tests:
+    test.testLogging.showStandardStreams = true
+
+    dependencies {
+        compile 'org.apache.logging.log4j:log4j-slf4j-impl:+',
+                'javax.xml.bind:jaxb-api:+',
+                'io.vavr:vavr:+'
+
+        compileOnly 'org.projectlombok:lombok:+',//':lombok-edge:',
+                'edu.washington.cs.types.checker:checker-framework:+'
+
+        testCompile 'org.junit.jupiter:junit-jupiter-params:+',
+                'org.hamcrest:java-hamcrest:+',
+                'org.mockito:mockito-core:+'
+
+        testRuntime 'com.h2database:h2:+',
+                'org.junit.jupiter:junit-jupiter-engine:+'
+
+        // To avoid compiler warnings about @API annotations in JUnit code
+        testCompileOnly 'org.apiguardian:apiguardian-api:+'
+    }
+}
+// type in terminal: gradle wrapper --gradle-version=4.8-rc-1
+task wrapper(type: Wrapper) {
+    description = 'Generates gradlew[.bat] scripts'
+    gradleVersion = '4.8-rc-1'
+    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
