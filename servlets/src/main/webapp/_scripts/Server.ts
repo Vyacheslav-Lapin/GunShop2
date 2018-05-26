@@ -1,12 +1,11 @@
 //noinspection JSUnusedGlobalSymbols
 class Server extends BaseServer {
 
-    public getGuns(): Promise<Array<Gun>> {
+    public getGuns(): Promise<Gun[]> {
         return this.getObject(`gun`);
     }
 
-    //noinspection JSUnusedGlobalSymbols
-    public getInstances(): Promise<Array<Instance>> {
+    public getInstances(): Promise<Instance[]> {
         return this.getObject(`instance`);
     }
 }

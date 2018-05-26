@@ -2,13 +2,21 @@ apply plugin: 'war'
 
 dependencies {
 
-    compile project(":core")
+//    compile project(":core")
     compile project(":jdbc")
 
     // Tomcat internal libraries
     providedCompile 'org.apache.tomcat:tomcat-api:+',
             'org.apache.tomcat:tomcat-jsp-api:+',
             'javax:javaee-api:+'
+
+    // MVC
+    compile 'org.springframework:spring-webmvc:+',
+            'javax.servlet.jsp.jstl:javax.servlet.jsp.jstl-api:+',
+            'org.glassfish.web:javax.servlet.jsp.jstl:+'
+
+    compileOnly 'org.apache.tomcat:tomcat-api:+',
+            'org.apache.tomcat:tomcat-jsp-api:+'
 
     // JSTL
 //    compile 'javax.servlet.jsp.jstl:javax.servlet.jsp.jstl-api:+'

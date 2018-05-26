@@ -5,7 +5,7 @@ class SocketChannel {
 
     private input: HTMLInputElement;
     private output: HTMLDivElement;
-    private webSocket: WebSocket;
+    private readonly webSocket: WebSocket;
 
     //noinspection JSUnusedGlobalSymbols
     constructor(outputElementId = `output`, inputElementId = `message`) {

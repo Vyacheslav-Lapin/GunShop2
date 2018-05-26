@@ -18,7 +18,7 @@ class InstanceCatalog {
     }
 
     //noinspection JSUnusedGlobalSymbols
-    public addAll(instances: Array<Instance> = []) {
+    public addAll(instances: Instance[] = []) {
         instances.forEach(this.add.bind(this));
     }
 }

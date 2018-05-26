@@ -1,0 +1,5 @@
+GET http://localhost:8080/webapi/instance?j_username=Jose_Eglesias@mail.es&j_password=qwerty HTTP/1.1
+Host: localhost
+Accept: application/json
+
+###

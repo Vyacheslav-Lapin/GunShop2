@@ -5,6 +5,7 @@
     "one-line": false,
     "no-trailing-whitespace": false,
     "comment-format": false,
-    "interface-name": false
+    "interface-name": false,
+    "arrow-parens": false
   }
 }

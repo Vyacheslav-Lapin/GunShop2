@@ -19,7 +19,6 @@
            targetNamespace="http://tomcat.apache.org/xml"
            xmlns:users="http://tomcat.apache.org/xml"
            elementFormDefault="qualified"
-           attributeFormDefault="unqualified"
            version="1.0">
   <element name="tomcat-users">
     <complexType>

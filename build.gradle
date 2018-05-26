@@ -27,8 +27,9 @@ subprojects {
                 'javax.xml.bind:jaxb-api:+',
                 'io.vavr:vavr:+'
 
-        compileOnly 'org.projectlombok:lombok:+',//':lombok-edge:',
-                'edu.washington.cs.types.checker:checker-framework:+'
+        compileOnly 'edu.washington.cs.types.checker:checker-framework:+',
+                //':lombok-edge:' // jdk 10+
+                'org.projectlombok:lombok:+' // JDK 1.8-9
 
         testCompile 'org.junit.jupiter:junit-jupiter-params:+',
                 'org.hamcrest:java-hamcrest:+',
@@ -41,9 +42,9 @@ subprojects {
         testCompileOnly 'org.apiguardian:apiguardian-api:+'
     }
 }
-// type in terminal: gradle wrapper --gradle-version=4.8-rc-1
+// type in terminal: gradle wrapper --gradle-version=4.8-rc-2
 task wrapper(type: Wrapper) {
     description = 'Generates gradlew[.bat] scripts'
-    gradleVersion = '4.8-rc-1'
+    gradleVersion = '4.8-rc-2'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
