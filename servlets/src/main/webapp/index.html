@@ -7,10 +7,9 @@
     <script src="_scripts/Server.js"></script>
     <script src="_scripts/InstanceCatalog.js"></script>
     <script>
-        addEventListener("DOMContentLoaded", () =>
-            new Server()
-                .getInstances()
-                .then(instancies => new InstanceCatalog().addAll(instancies)));
+        addEventListener("DOMContentLoaded", async () =>
+            new InstanceCatalog().addAll(
+                await new Server().getInstances()));
     </script>
 </head>
 <body>
